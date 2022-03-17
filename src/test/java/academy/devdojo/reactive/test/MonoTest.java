@@ -4,11 +4,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
+/** Reactive Streams
+ * 1. Asynchronous
+ * 2. Non-blocking
+ * 3. Backpressure
+ * Publisher <- (subscribe) Subscriber
+ * Subscription is created
+ * Publisher (onSubseribe with the subscription) -> Subscriber
+ * Subscription - (request N) Subseriber
+ * Publisher -> (onNext) Subscriber
+ * until:
+ * 1. Publisher sends ell the objects raquested.
+ * 2, Publisher sends all the objects it has. (onCosplete) sobscriber and subscription wf12 be canceled
+ * 3. There is an error. (onEror) -> subseriber and subseription will be canceled
+ */
 public class MonoTest {
 
     @Test
-    public void test(){
+    public void test() {
         log.info("Everything working as intended");
     }
 
 }
+
