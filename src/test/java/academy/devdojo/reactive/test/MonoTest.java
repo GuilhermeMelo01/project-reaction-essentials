@@ -56,7 +56,9 @@ public class MonoTest {
     public void monoSubscriberConsumerError() {
         String name = "William Suane";
         Mono<String> mono = Mono.just(name)
-                .map(s -> {throw new RuntimeException("testing mono with error");});
+                .map(s -> {
+                    throw new RuntimeException("testing mono with error");
+                });
 
 
         mono.subscribe(s -> log.info("name {}", s), s -> log.error("Something bad happened"));
@@ -98,14 +100,40 @@ public class MonoTest {
         mono.subscribe(s -> log.info("value {}", s),
                 Throwable::printStackTrace,
                 () -> log.info("FINISHED!"),
-                Subscription::cancel);
+                subscription -> subscription.request(5));
 
         log.info("---------------------");
+
         StepVerifier.create(mono)
                 .expectNext(name.toUpperCase())
                 .verifyComplete();
 
     }
+
+    @Test
+    public void monoDoOnMethods() {
+        String name = "William Suane";
+        Mono<Object> mono = Mono.just(name)
+                .log()
+                .map(String::toUpperCase)
+                .doOnSubscribe(subscription -> log.info("Subscribe"))
+                .doOnRequest(longnumber -> log.info("Request Received, starting doing something..."))
+                .doOnNext(s -> log.info("value is here. Executing doOnNext {}", s))
+                .flatMap(s -> Mono.empty())
+                .doOnNext(s -> log.info("value is here. Executing doOnNext {}", s)) //will not be executed
+                .doOnSuccess(s -> log.info("doOnSuccess executed"));
+
+        mono.subscribe(s -> log.info("value {}", s),
+                Throwable::printStackTrace,
+                () -> log.info("FINISHED!"));
+
+        log.info("---------------------");
+
+//        StepVerifier.create(mono)
+//                .expectNext(name.toUpperCase())
+//                .verifyComplete();
+    }
+
 
 }
 
